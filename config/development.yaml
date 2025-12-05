@@ -1,0 +1,6 @@
+server:
+  name: coding-agent
+  version: 1.0.0
+
+logging:
+  level: WARNING

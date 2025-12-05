@@ -1,0 +1,28 @@
+server:
+  name: coding-agent
+  version: 1.0.0
+
+project:
+  max_file_size: 1048576
+  max_depth: 4
+
+patterns:
+  include:
+    - "*.py"
+    - "*.js"
+    - "*.ts"
+    - "*.json"
+    - "*.yaml"
+    - "*.md"
+  
+  exclude_dirs:
+    - __pycache__
+    - node_modules
+    - .git
+    - .venv
+    - venv
+    - dist
+    - build
+
+logging:
+  level: INFO

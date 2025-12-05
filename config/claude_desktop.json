@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "coding-agent": {
+      "command": "python",
+      "args": ["-m", "src.server.main"],
+      "cwd": "E:\\mcp_course\\coding-agent-mcp",
+      "env": {
+        "PROJECT_ROOT": "E:\\mcp_course\\coding-agent-mcp"
+      }
+    }
+  }
+}
