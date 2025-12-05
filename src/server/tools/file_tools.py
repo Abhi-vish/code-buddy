@@ -94,8 +94,15 @@ class EditFileTool(BaseTool):
             "required": ["filepath", "old_content", "new_content"]
         }
     
-    async def execute(self, filepath: str, old_content: str, new_content: str) -> ToolResult:
+    async def execute(self, filepath: str, old_content: str, new_content: str = None, **kwargs) -> ToolResult:
         try:
+            # Handle alternative parameter names that might be sent
+            if new_content is None and 'new_str' in kwargs:
+                new_content = kwargs['new_str']
+            
+            if not new_content:
+                return self.error("The 'new_content' parameter is required.")
+            
             full_path = self.validator.validate(filepath)
             file_text = read_file(full_path)
 

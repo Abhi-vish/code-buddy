@@ -1,2 +1,3 @@
 .venv
 mcp_log.py
+__pycache__
