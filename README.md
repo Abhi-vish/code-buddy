@@ -2,8 +2,8 @@
 
 > **Your AI-powered coding companion for Claude Desktop**
 
-[![GitHub stars](https://img.shields.io/github/stars/Abhi-vish/mcp-server)](https://github.com/Abhi-vish/mcp-server/stargazers)
-[![License](https://img.shields.io/github/license/Abhi-vish/mcp-server)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Abhi-vish/code-buddy)](https://github.com/Abhi-vish/code-buddy/stargazers)
+[![License](https://img.shields.io/github/license/Abhi-vish/code-buddy)](LICENSE)
 [![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
 > **Project Status**: Work in Progress - Active Development
@@ -93,8 +93,8 @@ https://github.com/user-attachments/assets/5bd48fab-73cc-4ea9-b28e-d52ff224fc2b
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Abhi-vish/mcp-server.git
-cd mcp-server
+git clone https://github.com/Abhi-vish/code-buddy.git
+cd code-buddy
 ```
 
 2. Install dependencies:
@@ -126,15 +126,15 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
       "command": "uv",
       "args": [
         "--directory",
-        "C:\\path\\to\\mcp-server",
+        "C:\\path\\to\\code-buddy",
         "run",
         "python",
         "-m",
         "src.server.main"
       ],
-      "cwd": "C:\\path\\to\\mcp-server",
+      "cwd": "C:\\path\\to\\code-buddy",
       "env": {
-        "PROJECT_ROOT": "C:\\path\\to\\mcp-server",
+        "PROJECT_ROOT": "C:\\path\\to\\code-buddy",
         "ALLOW_EXTERNAL_PATHS": "true"
       }
     }
@@ -142,7 +142,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 }
 ```
 
-3. Replace `C:\\path\\to\\mcp-server` with your actual project path
+3. Replace `C:\\path\\to\\code-buddy` with your actual project path
 
 4. Restart Claude Desktop
 
