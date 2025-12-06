@@ -1,4 +1,35 @@
+# Python
 .venv
-mcp_log.py
-__pycache__
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment
 .env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+mcp_log.py
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Development
+chat_agent.py
