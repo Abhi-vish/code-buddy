@@ -1,287 +1,161 @@
 import asyncio
 import sys
-import os
 from pathlib import Path
-from dataclasses import dataclass
-from dotenv import load_dotenv
 
-load_dotenv()
+sys.path.insert(0, str(Path(__file__).parent))
 
-@dataclass
-class CLIConfig:
-    model: str = "gpt-4o-mini"
-    project_root: Path = None
-    max_iterations: int = 15
-    temperature: float = 0.7
-    verbose: bool = False
+from src.client.session import MCPSessionManager
+from src.client.llm import OpenAILLM
+from src.client.agents import CodingAgent, AgentConfig
 
 
-class OpenAICLI:
+async def run_interactive_agent():
+    print("=" * 70)
+    print("  Interactive Coding Agent")
+    print("=" * 70)
+    print("\nInitializing agent with MCP tools...")
     
-    def __init__(self, config: CLIConfig):
-        self.config = config
-        self.agent = None
-        self.session = None
-        self.running = True
+    manager = MCPSessionManager.create(
+        project_root=Path(__file__).parent,
+        server_module="src.server.main"
+    )
     
-    async def initialize(self, session):
-        from src.client.llm import OpenAILLM
-        from src.client.agents import CodingAgent, AgentConfig
-        
-        self.session = session
-        
-        llm = OpenAILLM(
-            model=self.config.model,
-            temperature=self.config.temperature
+    llm = OpenAILLM(
+        model="gpt-4o-mini",
+        temperature=0.7,
+        max_tokens=4096
+    )
+    
+    async with manager.connect() as session:
+        config = AgentConfig(
+            max_iterations=10,
+            verbose=True
         )
+        agent = CodingAgent(llm, session, config)
+        await agent.initialize()
         
-        agent_config = AgentConfig(
-            max_iterations=self.config.max_iterations,
-            verbose=self.config.verbose
-        )
+        print(f"Agent initialized with {len(agent.tools)} tools available")
+        print("\nType your questions or requests. Type 'exit' or 'quit' to end.")
+        print("Type 'help' for available commands.\n")
         
-        self.agent = CodingAgent(llm, session, agent_config)
-        await self.agent.initialize()
-    
-    def clear_screen(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
-    
-    def print_header(self):
-        width = 60
-        print("=" * width)
-        print("CODING AGENT".center(width))
-        print(f"Model: {self.config.model}".center(width))
-        print("=" * width)
-        print(f"Project: {self.config.project_root}")
-        print("-" * width)
-        print("Commands:")
-        print("  /help     Show this help")
-        print("  /clear    Clear screen")
-        print("  /reset    Reset conversation")
-        print("  /tools    List available tools")
-        print("  /files    List project files")
-        print("  /tree     Show project structure")
-        print("  /exit     Exit the agent")
-        print("-" * width)
-        print()
-    
-    def print_help(self):
-        print()
-        print("Available Commands:")
-        print("  /help     Show this help message")
-        print("  /clear    Clear the screen")
-        print("  /reset    Reset the conversation history")
-        print("  /tools    List all available tools")
-        print("  /files    List project files (first 30)")
-        print("  /tree     Show project directory structure")
-        print("  /read     Read a file: /read <filepath>")
-        print("  /run      Run a command: /run <command>")
-        print("  /exit     Exit the application")
-        print()
-        print("Tips:")
-        print("  - Ask the agent to read, write, or modify files")
-        print("  - Ask for code reviews, refactoring, or debugging help")
-        print("  - The agent can run shell commands and git operations")
-        print()
-    
-    async def handle_command(self, command: str) -> bool:
-        parts = command.split(maxsplit=1)
-        cmd = parts[0].lower()
-        args = parts[1] if len(parts) > 1 else ""
+        conversation_history = []
         
-        if cmd in ("/exit", "/quit", "/q"):
-            self.running = False
-            return True
-        
-        if cmd == "/help":
-            self.print_help()
-            return True
-        
-        if cmd == "/clear":
-            self.clear_screen()
-            self.print_header()
-            return True
-        
-        if cmd == "/reset":
-            self.agent.reset()
-            await self.agent.initialize()
-            print("\nConversation reset.\n")
-            return True
-        
-        if cmd == "/tools":
-            tools = await self.session.list_tools()
-            print(f"\nAvailable Tools ({len(tools.tools)}):\n")
-            for tool in tools.tools:
-                desc = tool.description[:50] + "..." if len(tool.description) > 50 else tool.description
-                print(f"  {tool.name:<20} {desc}")
-            print()
-            return True
-        
-        if cmd == "/files":
-            resources = await self.session.list_resources()
-            files = [r.uri.replace("file://", "") for r in resources.resources if r.uri.startswith("file://")]
-            print(f"\nProject Files ({len(files)} total):\n")
-            for f in files[:30]:
-                print(f"  {f}")
-            if len(files) > 30:
-                print(f"  ... and {len(files) - 30} more")
-            print()
-            return True
-        
-        if cmd == "/tree":
-            result = await self.session.call_tool("get_tree", {"max_depth": 3})
-            print(f"\n{result.content[0].text}\n")
-            return True
-        
-        if cmd == "/read":
-            if not args:
-                print("\nUsage: /read <filepath>\n")
-                return True
-            result = await self.session.call_tool("read_file", {"filepath": args})
-            print(f"\n{result.content[0].text}\n")
-            return True
-        
-        if cmd == "/run":
-            if not args:
-                print("\nUsage: /run <command>\n")
-                return True
-            result = await self.session.call_tool("run_command", {"command": args, "timeout": 30})
-            print(f"\n{result.content[0].text}\n")
-            return True
-        
-        print(f"\nUnknown command: {cmd}")
-        print("Type /help for available commands.\n")
-        return True
-    
-    def print_thinking(self):
-        print("\nThinking", end="", flush=True)
-    
-    def print_tool_call(self, tool_name: str, args: dict):
-        if self.config.verbose:
-            print(f"\n[Tool: {tool_name}]")
-            for key, value in args.items():
-                val_str = str(value)[:50] + "..." if len(str(value)) > 50 else str(value)
-                print(f"  {key}: {val_str}")
-    
-    async def process_input(self, user_input: str):
-        if user_input.startswith("/"):
-            await self.handle_command(user_input)
-            return
-        
-        print()
-        
-        try:
-            response = await self.agent.chat(user_input)
-            print(f"Agent: {response}\n")
-        except KeyboardInterrupt:
-            print("\n\nInterrupted.\n")
-        except Exception as e:
-            print(f"\nError: {e}\n")
-    
-    async def run(self):
-        from src.client.session import MCPSessionManager
-        
-        manager = MCPSessionManager(
-            server_command=sys.executable,
-            server_args=["-m", "src.server.main"],
-            env={"PROJECT_ROOT": str(self.config.project_root)}
-        )
-        
-        print("\nConnecting to MCP server...")
-        
-        async with manager.connect() as session:
-            await self.initialize(session)
-            
-            self.clear_screen()
-            self.print_header()
-            
-            while self.running:
-                try:
-                    user_input = input("You: ").strip()
-                except EOFError:
-                    break
-                except KeyboardInterrupt:
-                    print("\n")
-                    continue
+        while True:
+            try:
+                user_input = input("\n> ").strip()
                 
                 if not user_input:
                     continue
                 
-                await self.process_input(user_input)
-            
-            print("\nGoodbye!\n")
+                if user_input.lower() in ['exit', 'quit', 'bye']:
+                    print("\nGoodbye!")
+                    break
+                
+                if user_input.lower() in ['help', '?']:
+                    print_help(agent)
+                    continue
+                
+                if user_input.lower() == 'tools':
+                    print_tools(agent)
+                    continue
+                
+                if user_input.lower() == 'clear':
+                    conversation_history = []
+                    print("\nConversation history cleared.")
+                    continue
+                
+                print()
+                async for chunk in agent.chat_stream(user_input):
+                    print(chunk, end='', flush=True)
+                print()
+                
+            except KeyboardInterrupt:
+                print("\n\nInterrupted. Goodbye!")
+                break
+            except Exception as e:
+                print(f"\nError: {str(e)}")
 
 
-def run_openai_cli(
-    model: str = "gpt-4o-mini",
-    project_root: str | None = None,
-    verbose: bool = False,
-    temperature: float = 0.7
-):
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        print("Error: OPENAI_API_KEY environment variable not set")
-        print("Set it with: export OPENAI_API_KEY=sk-xxxxx")
-        sys.exit(1)
+def print_help(agent):
+    print("\n" + "=" * 70)
+    print("  HELP")
+    print("=" * 70)
+    print("""
+Commands:
+  help, ?     - Show this help message
+  tools       - List all available tools
+  clear       - Clear conversation history
+  exit, quit  - Exit the agent
+
+Usage:
+  Just type your question or request naturally. The agent will:
+  - Answer questions about code
+  - Read and analyze files
+  - Make changes to files
+  - Run commands
+  - Use git operations
+  - Format and lint code
+  - Search for patterns
+  - And more
+
+Examples:
+  "What files are in the src directory?"
+  "Read the main.py file"
+  "Search for the function called 'process_data'"
+  "Run the tests"
+  "Show me the git status"
+  "Format all Python files"
+    """)
+
+
+def print_tools(agent):
+    print("\n" + "=" * 70)
+    print(f"  AVAILABLE TOOLS ({len(agent.tools)})")
+    print("=" * 70)
     
-    config = CLIConfig(
-        model=model,
-        project_root=Path(project_root) if project_root else Path.cwd(),
-        verbose=verbose,
-        temperature=temperature
-    )
+    categories = {
+        "File Operations": [],
+        "Directory Operations": [],
+        "Search & Replace": [],
+        "Git Operations": [],
+        "Code Tools": [],
+        "Command Execution": []
+    }
     
-    cli = OpenAICLI(config)
-    asyncio.run(cli.run())
+    for tool in agent.tools:
+        name = tool['name']
+        desc = tool.get('description', 'No description')
+        
+        if 'file' in name:
+            categories["File Operations"].append((name, desc))
+        elif 'directory' in name or 'tree' in name or 'list' in name:
+            categories["Directory Operations"].append((name, desc))
+        elif 'search' in name or 'find' in name or 'replace' in name:
+            categories["Search & Replace"].append((name, desc))
+        elif 'git' in name:
+            categories["Git Operations"].append((name, desc))
+        elif 'analyze' in name or 'format' in name or 'lint' in name or 'functions' in name:
+            categories["Code Tools"].append((name, desc))
+        elif 'command' in name or 'run' in name or 'python' in name:
+            categories["Command Execution"].append((name, desc))
+        else:
+            categories["File Operations"].append((name, desc))
+    
+    for category, tools in categories.items():
+        if tools:
+            print(f"\n{category}:")
+            for name, desc in sorted(tools):
+                print(f"  {name:25s} - {desc}")
+    
+    print()
 
 
 def main():
-    import argparse
-    
-    parser = argparse.ArgumentParser(
-        description="Coding Agent CLI with OpenAI GPT-4o-mini",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  python -m src.client.ui.openai_cli
-  python -m src.client.ui.openai_cli --project /path/to/project
-  python -m src.client.ui.openai_cli --model gpt-4o --verbose
-        """
-    )
-    
-    parser.add_argument(
-        "--model", "-m",
-        default="gpt-4o-mini",
-        help="OpenAI model to use (default: gpt-4o-mini)"
-    )
-    
-    parser.add_argument(
-        "--project", "-p",
-        default=None,
-        help="Project root directory (default: current directory)"
-    )
-    
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Show verbose output including tool calls"
-    )
-    
-    parser.add_argument(
-        "--temperature", "-t",
-        type=float,
-        default=0.7,
-        help="Model temperature (default: 0.7)"
-    )
-    
-    args = parser.parse_args()
-    
-    run_openai_cli(
-        model=args.model,
-        project_root=args.project,
-        verbose=args.verbose,
-        temperature=args.temperature
-    )
+    try:
+        asyncio.run(run_interactive_agent())
+    except Exception as e:
+        print(f"\nFatal error: {str(e)}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

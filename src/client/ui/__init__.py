@@ -1,1 +1,1 @@
-from .cli import OpenAICLI, run_openai_cli
+from .cli import main
