@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "coding-agent": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "E:\\mcp_course\\coding-agent-mcp",
+        "run",
+        "python",
+        "-m",
+        "src.server.main"
+      ],
+      "env": {
+        "PROJECT_ROOT": "E:\\mcp_course\\coding-agent-mcp",
+        "ALLOW_EXTERNAL_PATHS": "true"
+      }
+    }
+  }
+}

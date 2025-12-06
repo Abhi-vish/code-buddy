@@ -1,0 +1,4 @@
+.venv
+mcp_log.py
+__pycache__
+.env
