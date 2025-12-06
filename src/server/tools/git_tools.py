@@ -53,8 +53,8 @@ class GitTool(BaseTool):
         
 class GitStatusTool(BaseTool):
     
-    name = "git_status"
-    description = "Get git status of the project"
+    name: str = "git_status"
+    description: str = "Get git status of the project"
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -90,8 +90,8 @@ class GitStatusTool(BaseTool):
 
 class GitDiffTool(BaseTool):
     
-    name = "git_diff"
-    description = "Show git diff"
+    name: str = "git_diff"
+    description: str = "Show git diff"
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -145,8 +145,8 @@ class GitDiffTool(BaseTool):
 
 class GitLogTool(BaseTool):
     
-    name = "git_log"
-    description = "Show git commit history"
+    name: str = "git_log"
+    description: str = "Show git commit history"
     
     def __init__(self, project_root: Path):
         self.project_root = project_root

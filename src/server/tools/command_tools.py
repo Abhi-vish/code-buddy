@@ -21,6 +21,10 @@ class RunCommandTool(BaseTool):
                     "type": "string",
                     "description": "Command to run"
                 },
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory (optional, defaults to project root)"
+                },
                 "timeout": {
                     "type": "integer",
                     "description": "Timeout in seconds (default: 60)"
@@ -29,13 +33,21 @@ class RunCommandTool(BaseTool):
             "required": ["command"]
         }
     
-    async def execute(self, command: str, timeout: int = 60) -> ToolResult:
+    async def execute(self, command: str, cwd: str = None, timeout: int = 60) -> ToolResult:
         try:
+            # Use specified working directory or default to project root
+            work_dir = Path(cwd) if cwd else self.project_root
+            
+            # Ensure the directory exists
+            if not work_dir.exists():
+                return self.error(f"Working directory does not exist: {work_dir}")
+            
             process = await asyncio.create_subprocess_shell(
                 command,
-                cwd=self.project_root,
+                cwd=str(work_dir),
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL  # Prevent hanging on input
             )
             
             try:
@@ -45,15 +57,20 @@ class RunCommandTool(BaseTool):
                 )
             except asyncio.TimeoutError:
                 process.kill()
+                await process.wait()  # Ensure cleanup
                 return self.error(f"Command timed out after {timeout}s")
             
             output_parts = []
             
             if stdout:
-                output_parts.append(f"STDOUT:\n{stdout.decode()}")
+                stdout_text = stdout.decode('utf-8', errors='replace')
+                if stdout_text.strip():
+                    output_parts.append(f"STDOUT:\n{stdout_text}")
             
             if stderr:
-                output_parts.append(f"STDERR:\n{stderr.decode()}")
+                stderr_text = stderr.decode('utf-8', errors='replace')
+                if stderr_text.strip():
+                    output_parts.append(f"STDERR:\n{stderr_text}")
             
             exit_code = process.returncode
             status = "Success" if exit_code == 0 else f"Failed (exit code: {exit_code})"
@@ -62,12 +79,12 @@ class RunCommandTool(BaseTool):
             
             return self.success(f"{status}\n\n{output}")
         except Exception as e:
-            return self.error(str(e))
+            return self.error(f"Command execution error: {str(e)}")
         
 class RunPythonTool(BaseTool):
     
-    name = "run_python"
-    description = "Run a Python script or code"
+    name: str = "run_python"
+    description: str = "Run a Python script or code"
     
     def __init__(self, project_root: Path):
         self.project_root = project_root

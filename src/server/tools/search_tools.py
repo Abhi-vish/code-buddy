@@ -86,8 +86,8 @@ class SearchInFilesTool(BaseTool):
         
 class FindReplaceTool(BaseTool):
     
-    name = "find_replace"
-    description = "Find and replace text in a single file"
+    name: str = "find_replace"
+    description: str = "Find and replace text in a single file"
     
     def __init__(self, project_root: Path):
         self.validator = PathValidator(project_root)
@@ -145,8 +145,8 @@ class FindReplaceTool(BaseTool):
 
 class FindReplaceAllTool(BaseTool):
     
-    name = "find_replace_all"
-    description = "Find and replace text across multiple files"
+    name: str = "find_replace_all"
+    description: str = "Find and replace text across multiple files"
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
