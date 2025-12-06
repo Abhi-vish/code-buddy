@@ -10,9 +10,9 @@ class SearchInFilesTool(BaseTool):
     name: str = "search_in_files"
     description: str = "Search for text or pattern across project files"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
-        self.validator = PathValidator(project_root)
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
@@ -89,8 +89,8 @@ class FindReplaceTool(BaseTool):
     name: str = "find_replace"
     description: str = "Find and replace text in a single file"
     
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
@@ -148,9 +148,9 @@ class FindReplaceAllTool(BaseTool):
     name: str = "find_replace_all"
     description: str = "Find and replace text across multiple files"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
-        self.validator = PathValidator(project_root)
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {

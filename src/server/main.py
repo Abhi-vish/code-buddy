@@ -21,7 +21,7 @@ class CodingAgentServer:
     def __init__(self, config: ServerConfig = None):
         self.config = config or ServerConfig.from_env()
         self.server = Server(self.config.name)
-        self.tools = get_all_tools(self.config.project_root)
+        self.tools = get_all_tools(self.config.project_root, self.config.allow_external_paths)
         self.resource_manager = ResourceManager(self.config.project_root)
         self.prompts = get_all_prompts()
         self._tool_map = {tool.name: tool for tool in self.tools}

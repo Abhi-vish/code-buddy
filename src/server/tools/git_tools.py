@@ -9,7 +9,7 @@ class GitTool(BaseTool):
     name: str = "git"
     description: str = "Run git commands"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:
@@ -56,7 +56,7 @@ class GitStatusTool(BaseTool):
     name: str = "git_status"
     description: str = "Get git status of the project"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:
@@ -93,7 +93,7 @@ class GitDiffTool(BaseTool):
     name: str = "git_diff"
     description: str = "Show git diff"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:
@@ -148,7 +148,7 @@ class GitLogTool(BaseTool):
     name: str = "git_log"
     description: str = "Show git commit history"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:

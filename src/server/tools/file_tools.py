@@ -9,8 +9,8 @@ class ReadFileTool(BaseTool):
     name: str = "read_file"
     description: str = "Reads the content of a text file at the specified path"
 
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self)-> dict:
         return {
@@ -18,7 +18,7 @@ class ReadFileTool(BaseTool):
             "properties": {
                 "filepath": {
                     "type": "string",
-                    "description": "The path to the file to read, relative to the project root."
+                    "description": "The path to the file to read (can be absolute or relative to project root)."
                 }
             },
             "required": ["filepath"]
@@ -38,8 +38,8 @@ class WriteFileTool(BaseTool):
     name: str = "write_file"
     description: str = "Writes content to a text file at the specified path"
     
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -47,7 +47,7 @@ class WriteFileTool(BaseTool):
             "properties": {
                 "filepath": {
                     "type": "string",
-                    "description": "The path to the file to write, relative to the project root."
+                    "description": "The path to the file to write (can be absolute or relative to project root)."
                 },
                 "content": {
                     "type": "string",
@@ -71,8 +71,8 @@ class EditFileTool(BaseTool):
     name: str = "edit_file"
     description: str = "Edit a file by replacing specific content"
 
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -107,7 +107,15 @@ class EditFileTool(BaseTool):
             file_text = read_file(full_path)
 
             if old_content not in file_text:
-                return self.error(f"Content to replace not found in file '{filepath}'.")
+                # Provide a helpful error message with context
+                return self.error(
+                    f"Content to replace not found in file '{filepath}'.\n"
+                    f"Tip: For complex edits, use 'write_file' to rewrite the entire file instead.\n"
+                    f"The exact content (including whitespace) must match. Consider:\n"
+                    f"1. Reading the file first to see actual content\n"
+                    f"2. Using write_file to replace the entire file\n"
+                    f"3. Ensuring line endings and indentation match exactly"
+                )
 
             updated_text = file_text.replace(old_content, new_content)
             write_file(full_path, updated_text)
@@ -122,8 +130,8 @@ class DeleteFileTool(BaseTool):
     name: str = "delete_file"
     description: str = "Deletes a file at the specified path"
 
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -156,8 +164,8 @@ class MoveFileTool(BaseTool):
     name: str = "move_file"
     description: str = "Moves a file from one path to another"
 
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -198,8 +206,8 @@ class CopyFileTool(BaseTool):
     name: str = "copy_file"
     description: str = "Copies a file from one path to another"
 
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {

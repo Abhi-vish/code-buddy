@@ -10,7 +10,7 @@ class RunCommandTool(BaseTool):
     name: str = "run_command"
     description: str = "Run a shell command in the project directory"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:
@@ -86,7 +86,7 @@ class RunPythonTool(BaseTool):
     name: str = "run_python"
     description: str = "Run a Python script or code"
     
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, allow_external: bool = True):
         self.project_root = project_root
     
     def get_input_schema(self) -> dict:

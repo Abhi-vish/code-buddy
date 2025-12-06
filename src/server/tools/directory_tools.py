@@ -7,10 +7,10 @@ from .base import BaseTool
 class CreateDirectoryTool(BaseTool):
 
     name: str = "create_directory"
-    description: str = "Creates a directory at the specified path within the project."
+    description: str = "Creates a directory at the specified path (can be absolute or relative to project)."
 
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -38,8 +38,8 @@ class ListDirectoryTool(BaseTool):
     name: str = "list_directory"
     description: str = "Lists files and directories at the specified path within the project."
 
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -47,7 +47,7 @@ class ListDirectoryTool(BaseTool):
             "properties": {
                 "dirpath": {
                     "type": "string",
-                    "description": "The path to the directory to list, relative to the project root."
+                    "description": "The path to the directory to list (can be absolute or relative to project root)."
                 },
                 "recursive":{
                     "type": "boolean",
@@ -95,8 +95,8 @@ class DeleteDirectoryTool(BaseTool):
     name: str = "delete_directory"
     description: str = "Deletes a directory at the specified path within the project."
 
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -104,7 +104,7 @@ class DeleteDirectoryTool(BaseTool):
             "properties": {
                 "dirpath": {
                     "type": "string",
-                    "description": "The path to the directory to delete, relative to the project root."
+                    "description": "The path to the directory to delete (can be absolute or relative to project root)."
                 }
             },
             "required": ["dirpath"]
@@ -135,8 +135,8 @@ class GetTreeTool(BaseTool):
     name: str = "get_directory_tree"
     description: str = "Gets the directory tree structure starting from the specified path within the project."
 
-    def __init__(self, project_root: Path):
-        self.path_validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.path_validator = PathValidator(project_root, allow_external=allow_external)
 
     def get_input_schema(self) -> dict:
         return {
@@ -144,7 +144,7 @@ class GetTreeTool(BaseTool):
             "properties": {
                 "dirpath": {
                     "type": "string",
-                    "description": "The path to the directory to get the tree from, relative to the project root."
+                    "description": "The path to the directory to get the tree from (can be absolute or relative to project root)."
                 },
                 "max_depth": {
                     "type": "integer",

@@ -10,8 +10,8 @@ class AnalyzeCodeTool(BaseTool):
     name: str = "analyze_code"
     description: str = "Analyze code file and provide statistics"
     
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
@@ -54,8 +54,8 @@ class GetFunctionsTool(BaseTool):
     name: str = "get_functions"
     description: str = "Extract function and class definitions from a Python file"
     
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
@@ -118,8 +118,8 @@ class FormatCodeTool(BaseTool):
     name: str = "format_code"
     description: str = "Format a Python file using black"
     
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
@@ -160,8 +160,8 @@ class LintCodeTool(BaseTool):
     name: str = "lint_code"
     description: str = "Lint a Python file using ruff or flake8"
     
-    def __init__(self, project_root: Path):
-        self.validator = PathValidator(project_root)
+    def __init__(self, project_root: Path, allow_external: bool = True):
+        self.validator = PathValidator(project_root, allow_external=allow_external)
     
     def get_input_schema(self) -> dict:
         return {
