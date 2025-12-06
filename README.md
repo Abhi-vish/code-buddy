@@ -2,9 +2,9 @@
 
 > **Your AI-powered coding companion for Claude Desktop**
 
-[![GitHub stars](https://img.shields.io/github/stars/Abhi-vish/code-buddy)](https://github.com/Abhi-vish/code-buddy/stargazers)
-[![License](https://img.shields.io/github/license/Abhi-vish/code-buddy)](LICENSE)
-[![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-active%20development-orange.svg)
 
 > **Project Status**: Work in Progress - Active Development
 
