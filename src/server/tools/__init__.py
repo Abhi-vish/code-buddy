@@ -16,12 +16,18 @@ from .directory_tools import (
 )
 from .search_tools import (
     SearchInFilesTool,
+    FindReplaceTool,
+    FindReplaceAllTool,
 )
 from .command_tools import (
     RunCommandTool,
+    RunPythonTool,
 )
 from .git_tools import (
     GitTool,
+    GitStatusTool,
+    GitDiffTool,
+    GitLogTool,
 )
 from .code_tools import (
     AnalyzeCodeTool,
@@ -44,8 +50,14 @@ def get_all_tools(project_root: Path) -> list[BaseTool]:
         DeleteDirectoryTool(project_root),
         GetTreeTool(project_root),
         SearchInFilesTool(project_root),
+        FindReplaceTool(project_root),
+        FindReplaceAllTool(project_root),
         RunCommandTool(project_root),
+        RunPythonTool(project_root),
         GitTool(project_root),
+        GitStatusTool(project_root),
+        GitDiffTool(project_root),
+        GitLogTool(project_root),
         AnalyzeCodeTool(project_root),
         GetFunctionsTool(project_root),
         FormatCodeTool(project_root),
