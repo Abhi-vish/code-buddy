@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class ServerConfig:
-    name: str = "coding-agent"
+    name: str = "code-buddy"
     version: str = "1.0.0"
     project_root: Path = field(default_factory=Path.cwd)
     max_file_size: int = 1024 * 1024
@@ -16,7 +16,7 @@ class ServerConfig:
     @classmethod
     def from_env(cls) -> "ServerConfig":
         return cls(
-            name=os.getenv("MCP_SERVER_NAME", "coding-agent"),
+            name=os.getenv("MCP_SERVER_NAME", "code-buddy"),
             version=os.getenv("MCP_SERVER_VERSION", "1.0.0"),
             project_root=Path(os.getenv("PROJECT_ROOT", os.getcwd())),
             max_file_size=int(os.getenv("MAX_FILE_SIZE", 1024 * 1024)),
@@ -28,7 +28,7 @@ class ServerConfig:
     @classmethod
     def from_dict(cls, data: dict) -> "ServerConfig":
         return cls(
-            name=data.get("name", "coding-agent"),
+            name=data.get("name", "code-buddy"),
             version=data.get("version", "1.0.0"),
             project_root=Path(data.get("project_root", os.getcwd())),
             max_file_size=data.get("max_file_size", 1024 * 1024),

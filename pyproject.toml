@@ -1,7 +1,7 @@
 [project]
-name = "coding-agent-mcp"
+name = "code-buddy"
 version = "0.1.0"
-description = "Add your description here"
+description = "Your AI-powered coding companion for Claude Desktop - MCP server with 23+ development tools"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

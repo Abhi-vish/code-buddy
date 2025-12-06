@@ -1,4 +1,10 @@
-# Coding Agent MCP Server
+# Code Buddy
+
+> **Your AI-powered coding companion for Claude Desktop**
+
+[![GitHub stars](https://img.shields.io/github/stars/Abhi-vish/mcp-server)](https://github.com/Abhi-vish/mcp-server/stargazers)
+[![License](https://img.shields.io/github/license/Abhi-vish/mcp-server)](LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
 > **Project Status**: Work in Progress - Active Development
 
@@ -116,19 +122,19 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 ```json
 {
   "mcpServers": {
-    "coding-agent": {
+    "code-buddy": {
       "command": "uv",
       "args": [
         "--directory",
-        "C:\\path\\to\\coding-agent-mcp",
+        "C:\\path\\to\\mcp-server",
         "run",
         "python",
         "-m",
         "src.server.main"
       ],
-      "cwd": "C:\\path\\to\\coding-agent-mcp",
+      "cwd": "C:\\path\\to\\mcp-server",
       "env": {
-        "PROJECT_ROOT": "C:\\path\\to\\coding-agent-mcp",
+        "PROJECT_ROOT": "C:\\path\\to\\mcp-server",
         "ALLOW_EXTERNAL_PATHS": "true"
       }
     }
@@ -136,7 +142,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 }
 ```
 
-3. Replace `C:\\path\\to\\coding-agent-mcp` with your actual project path
+3. Replace `C:\\path\\to\\mcp-server` with your actual project path
 
 4. Restart Claude Desktop
 
@@ -234,7 +240,7 @@ allow_external_paths: true
 ### Project Structure
 
 ```
-coding-agent-mcp/
+code-buddy/
 ├── src/
 │   ├── client/          # Client-side code (CLI agent)
 │   │   ├── agents/      # Agent implementations
