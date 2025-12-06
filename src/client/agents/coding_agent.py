@@ -26,6 +26,8 @@ IMPORTANT RULES:
      → read_file("C:\\project\\index.html") NOT just "index.html"
    - ALWAYS combine directory path + filename when working with external directories
    - Use forward slashes (/) or double backslashes (\\\\) in Windows paths
+   - For git and run_command tools: ALWAYS pass the cwd parameter when working outside project
+   - Example: git("init", cwd="C:\\project") NOT just git("init")
 
 4. BE PROACTIVE
    - Read files to understand context before answering

@@ -19,18 +19,25 @@ class GitTool(BaseTool):
                 "command": {
                     "type": "string",
                     "description": "Git command (without 'git' prefix)"
+                },
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory (optional, defaults to project root)"
                 }
             },
             "required": ["command"]
         }
     
-    async def execute(self, command: str) -> ToolResult:
+    async def execute(self, command: str, cwd: str = None) -> ToolResult:
         try:
+            work_dir = Path(cwd) if cwd else self.project_root
+            
             process = await asyncio.create_subprocess_shell(
                 f"git {command}",
-                cwd=self.project_root,
+                cwd=str(work_dir),
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL  # Prevent hanging on input
             )
             
             stdout, stderr = await process.communicate()
@@ -62,16 +69,24 @@ class GitStatusTool(BaseTool):
     def get_input_schema(self) -> dict:
         return {
             "type": "object",
-            "properties": {}
+            "properties": {
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory (optional, defaults to project root)"
+                }
+            }
         }
     
-    async def execute(self) -> ToolResult:
+    async def execute(self, cwd: str = None) -> ToolResult:
         try:
+            work_dir = Path(cwd) if cwd else self.project_root
+            
             process = await asyncio.create_subprocess_exec(
                 "git", "status", "--porcelain",
-                cwd=self.project_root,
+                cwd=str(work_dir),
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL
             )
             
             stdout, stderr = await process.communicate()
@@ -107,12 +122,18 @@ class GitDiffTool(BaseTool):
                 "staged": {
                     "type": "boolean",
                     "description": "Show staged changes"
+                },
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory (optional, defaults to project root)"
                 }
             }
         }
     
-    async def execute(self, filepath: str = None, staged: bool = False) -> ToolResult:
+    async def execute(self, filepath: str = None, staged: bool = False, cwd: str = None) -> ToolResult:
         try:
+            work_dir = Path(cwd) if cwd else self.project_root
+            
             cmd = ["git", "diff"]
             
             if staged:
@@ -124,9 +145,10 @@ class GitDiffTool(BaseTool):
             
             process = await asyncio.create_subprocess_exec(
                 *cmd,
-                cwd=self.project_root,
+                cwd=str(work_dir),
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL
             )
             
             stdout, stderr = await process.communicate()
@@ -162,12 +184,18 @@ class GitLogTool(BaseTool):
                 "oneline": {
                     "type": "boolean",
                     "description": "One line per commit"
+                },
+                "cwd": {
+                    "type": "string",
+                    "description": "Working directory (optional, defaults to project root)"
                 }
             }
         }
     
-    async def execute(self, count: int = 10, oneline: bool = True) -> ToolResult:
+    async def execute(self, count: int = 10, oneline: bool = True, cwd: str = None) -> ToolResult:
         try:
+            work_dir = Path(cwd) if cwd else self.project_root
+            
             cmd = ["git", "log", f"-{count}"]
             
             if oneline:
@@ -175,9 +203,10 @@ class GitLogTool(BaseTool):
             
             process = await asyncio.create_subprocess_exec(
                 *cmd,
-                cwd=self.project_root,
+                cwd=str(work_dir),
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.PIPE,
+                stdin=asyncio.subprocess.DEVNULL
             )
             
             stdout, stderr = await process.communicate()
