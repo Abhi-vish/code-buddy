@@ -37,6 +37,17 @@ from .code_tools import (
 )
 
 
+from .docker_tool import (
+    DockerTool,
+    DockerBuildTool,
+    DockerComposeTool,
+)
+
+from .http_tools import (
+    HttpRequestTool,
+    CurlTool,
+)
+
 def get_all_tools(project_root: Path, allow_external: bool = True) -> list[BaseTool]:
     return [
         ReadFileTool(project_root, allow_external),
@@ -62,4 +73,9 @@ def get_all_tools(project_root: Path, allow_external: bool = True) -> list[BaseT
         GetFunctionsTool(project_root, allow_external),
         FormatCodeTool(project_root, allow_external),
         LintCodeTool(project_root, allow_external),
+        DockerTool(project_root, allow_external),
+        DockerBuildTool(project_root, allow_external),
+        DockerComposeTool(project_root, allow_external),
+        HttpRequestTool(project_root, allow_external),
+        CurlTool(project_root, allow_external),
     ]

@@ -9,4 +9,5 @@ dependencies = [
     "black>=24.0.0",
     "ruff>=0.1.0",
     "openai>=2.9.0",
+    "aiohttp>=3.13.2",
 ]
